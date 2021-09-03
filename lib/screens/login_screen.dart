@@ -1,8 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uber_clone/screens/registeration_screen.dart';
+import 'package:uber_clone/widgets/progress_dialogue.dart';
+
+import '../main.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String id = 'login';
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
+
+  buildShowToast({required String message, required BuildContext context}) {
+    Fluttertoast.showToast(msg: '$message');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +55,7 @@ class LoginScreen extends StatelessWidget {
                       height: 1.0,
                     ),
                     TextField(
+                      controller: emailTextEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Email',
@@ -59,6 +75,7 @@ class LoginScreen extends StatelessWidget {
                       height: 1.0,
                     ),
                     TextField(
+                      controller: passwordTextEditingController,
                       obscureText: true,
                       obscuringCharacter: '*',
                       decoration: InputDecoration(
@@ -91,7 +108,19 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (!emailTextEditingController.text.contains('@')) {
+                          buildShowToast(
+                              message: 'Email is invalid', context: context);
+                        } else if (passwordTextEditingController.text.length <
+                            6) {
+                          buildShowToast(
+                              message: 'Password is not valid',
+                              context: context);
+                        } else {
+                          loginUser(context);
+                        }
+                      },
                       child: Container(
                         height: 50.0,
                         child: Center(
@@ -122,5 +151,48 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void loginUser(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialogue(
+            message: 'Authenticating user, please wait...',
+          );
+        });
+
+    final User? firebaseUser = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+      email: emailTextEditingController.text,
+      password: passwordTextEditingController.text,
+    )
+            .catchError((errMsg) {
+      Navigator.pop(context);
+      buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
+    }))
+        .user;
+
+    if (firebaseUser != null) // create user
+    {
+      // save data
+
+      usersRef.child(firebaseUser.uid).once().then((DataSnapshot snapshot) {
+        if (snapshot.value != null) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, HomeScreen.id, (route) => false);
+          buildShowToast(message: 'You are now logged in', context: context);
+        } else {
+          // error
+          Navigator.pop(context);
+          _firebaseAuth.signOut();
+          buildShowToast(message: 'No account found', context: context);
+        }
+      });
+    } else {
+      Navigator.pop(context);
+      buildShowToast(message: 'An error has occured', context: context);
+    }
   }
 }

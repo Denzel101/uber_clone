@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uber_clone/main.dart';
 import 'package:uber_clone/screens/home_screen.dart';
+import 'package:uber_clone/widgets/progress_dialogue.dart';
 
 import 'login_screen.dart';
 
@@ -203,12 +204,22 @@ class RegisterationScreen extends StatelessWidget {
   }
 
   void registerNewUSer(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialogue(
+            message: 'Registering user, please wait...',
+          );
+        });
+
     final User? firebaseUser = (await _firebaseAuth
             .createUserWithEmailAndPassword(
       email: emailTextEditingController.text,
       password: passwordTextEditingController.text,
     )
             .catchError((errMsg) {
+      Navigator.pop(context);
       buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
     }))
         .user;
@@ -229,6 +240,7 @@ class RegisterationScreen extends StatelessWidget {
           context, HomeScreen.id, (route) => false);
     } else {
       // error
+      Navigator.pop(context);
       buildShowToast(
           message: 'New user has not been created', context: context);
     }
