@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'divider.dart';
+import 'package:uber_clone/components/divider.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({

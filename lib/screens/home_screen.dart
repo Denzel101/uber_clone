@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:uber_clone/models/address_content.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/components/address_content.dart';
+import 'package:uber_clone/components/divider.dart';
+import 'package:uber_clone/models/app_data.dart';
+import 'package:uber_clone/screens/search_screen.dart';
 import 'package:uber_clone/services/methods.dart';
-import 'package:uber_clone/widgets/divider.dart';
 import 'package:uber_clone/widgets/drawer_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     newGoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String address = await Methods.searchCoordinateAddress(position);
+    String address = await Methods.searchCoordinateAddress(position, context);
     print('This is your address :: ' + address);
   }
 
@@ -161,32 +163,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 6.0,
-                            spreadRadius: 0.5,
-                            offset: Offset(0.7, 0.7),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.search,
-                              color: Colors.blueAccent,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius: 6.0,
+                              spreadRadius: 0.5,
+                              offset: Offset(0.7, 0.7),
                             ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text('Search drop off'),
                           ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                color: Colors.blueAccent,
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Text('Search drop off'),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -195,7 +205,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     AddressContent(
                       icon: Icons.home,
-                      locationAddress: 'Add home',
+                      locationAddress:
+                          Provider.of<AppData>(context).pickUpLocation != null
+                              ? Provider.of<AppData>(context)
+                                  .pickUpLocation!
+                                  .placeName
+                              : 'Add Home',
                       locationDescripton: 'Your living home address',
                     ),
                     SizedBox(
