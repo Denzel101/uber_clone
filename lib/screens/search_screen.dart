@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/components/divider.dart';
 import 'package:uber_clone/models/app_data.dart';
+import 'package:uber_clone/models/place_predictions.dart';
+import 'package:uber_clone/services/network_helper.dart';
+import 'package:uber_clone/utils/config_map.dart';
+import 'package:uber_clone/widgets/prediction_tile.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -10,11 +15,34 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController pickUpTextEditingController = TextEditingController();
   TextEditingController dropOffTextEditingController = TextEditingController();
+  List<PlacePredictions> placePredictionList = [];
+
+  void findPlace(String placeName) async {
+    if (placeName.length > 1) {
+      var autoCompleteUrl = Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&components=country:ke&key=$apiKey');
+
+      var res = await NetworkHelper.getRequest(autoCompleteUrl);
+      if (res == 'failed') {
+        return;
+      }
+      if (res['status'] == 'OK') {
+        var predictions = res['predictions'];
+        var placesList = (predictions as List)
+            .map((e) => PlacePredictions.fromJson(e))
+            .toList();
+
+        setState(() {
+          placePredictionList = placesList;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    String placeAddress =
-        Provider.of<AppData>(context).pickUpLocation!.placeName ?? '';
+    String? placeAddress =
+        Provider.of<AppData>(context).pickUpLocation!.placeName;
     pickUpTextEditingController.text = placeAddress;
 
     return SafeArea(
@@ -127,6 +155,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: Padding(
                               padding: EdgeInsets.all(3.0),
                               child: TextField(
+                                autofocus: true,
+                                onChanged: (value) {
+                                  findPlace(value);
+                                },
                                 controller: dropOffTextEditingController,
                                 decoration: InputDecoration(
                                   hintText: 'Where to?',
@@ -150,6 +182,31 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
+            //Displaying prediction
+            SizedBox(
+              height: 10.0,
+            ),
+            (placePredictionList.length > 0)
+                ? Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 16.0,
+                    ),
+                    child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        return PredictionTile(
+                          placePredictions: placePredictionList[index],
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          DividerWidget(),
+                      itemCount: placePredictionList.length,
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      padding: EdgeInsets.all(0.0),
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),

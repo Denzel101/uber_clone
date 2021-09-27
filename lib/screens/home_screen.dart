@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/components/address_content.dart';
 import 'package:uber_clone/components/divider.dart';
+import 'package:uber_clone/components/progress_dialogue.dart';
 import 'package:uber_clone/models/app_data.dart';
 import 'package:uber_clone/screens/search_screen.dart';
 import 'package:uber_clone/services/methods.dart';
@@ -51,13 +52,35 @@ class _HomeScreenState extends State<HomeScreen> {
     print('This is your address :: ' + address);
   }
 
+  Future<void> getPlaceDirection() async {
+    var initialPos =
+        Provider.of<AppData>(context, listen: false).pickUpLocation;
+    var finalPos = Provider.of<AppData>(context, listen: false).dropOffLocation;
+
+    var pickUpLatLng = LatLng(initialPos!.latitude, initialPos.longitude);
+    var dropOffLatLng = LatLng(finalPos!.latitude, finalPos.longitude);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          ProgressDialogue(message: 'Please wait...'),
+    );
+
+    var details =
+        await Methods.getPlaceDirectionDetails(pickUpLatLng, dropOffLatLng);
+
+    Navigator.pop(context);
+    print('This is Encoded points ::');
+    print(details!.encodedPoints);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        title: Text('Home Screen'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Home Screen'),
+      // ),
       drawer: Container(
         color: Colors.white,
         width: 255.0,
@@ -164,11 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 20.0,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        var res = await Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => SearchScreen()));
+
+                        if (res == 'getDirection') {
+                          await getPlaceDirection();
+                        }
                       },
                       child: Container(
                         decoration: BoxDecoration(

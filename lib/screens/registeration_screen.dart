@@ -20,6 +20,49 @@ class RegisterationScreen extends StatelessWidget {
     Fluttertoast.showToast(msg: '$message');
   }
 
+  void registerNewUSer(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialogue(
+            message: 'Registering user, please wait...',
+          );
+        });
+
+    final User? firebaseUser = (await _firebaseAuth
+            .createUserWithEmailAndPassword(
+      email: emailTextEditingController.text,
+      password: passwordTextEditingController.text,
+    )
+            .catchError((errMsg) {
+      Navigator.pop(context);
+      buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
+    }))
+        .user;
+
+    if (firebaseUser != null) // create user
+    {
+      // save data
+
+      Map userDataMap = {
+        'name': nameTextEditingController.text.trim(),
+        'email': emailTextEditingController.text.trim(),
+        'phone': phoneTextEditingController.text.trim(),
+      };
+
+      usersRef.child(firebaseUser.uid).set(userDataMap);
+      buildShowToast(message: 'Account has been created', context: context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, HomeScreen.id, (route) => false);
+    } else {
+      // error
+      Navigator.pop(context);
+      buildShowToast(
+          message: 'New user has not been created', context: context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,48 +244,5 @@ class RegisterationScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void registerNewUSer(BuildContext context) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return ProgressDialogue(
-            message: 'Registering user, please wait...',
-          );
-        });
-
-    final User? firebaseUser = (await _firebaseAuth
-            .createUserWithEmailAndPassword(
-      email: emailTextEditingController.text,
-      password: passwordTextEditingController.text,
-    )
-            .catchError((errMsg) {
-      Navigator.pop(context);
-      buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
-    }))
-        .user;
-
-    if (firebaseUser != null) // create user
-    {
-      // save data
-
-      Map userDataMap = {
-        'name': nameTextEditingController.text.trim(),
-        'email': emailTextEditingController.text.trim(),
-        'phone': phoneTextEditingController.text.trim(),
-      };
-
-      usersRef.child(firebaseUser.uid).set(userDataMap);
-      buildShowToast(message: 'Account has been created', context: context);
-      Navigator.pushNamedAndRemoveUntil(
-          context, HomeScreen.id, (route) => false);
-    } else {
-      // error
-      Navigator.pop(context);
-      buildShowToast(
-          message: 'New user has not been created', context: context);
-    }
   }
 }

@@ -1,7 +1,9 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/address.dart';
 import 'package:uber_clone/models/app_data.dart';
+import 'package:uber_clone/models/direction_details.dart';
 import 'package:uber_clone/utils/config_map.dart';
 import 'package:uber_clone/services/network_helper.dart';
 
@@ -32,5 +34,30 @@ class Methods {
           .updateUserPickUpLocationAddress(userPickupAddress);
     }
     return placeAddress;
+  }
+
+  static Future<DirectionDetails?> getPlaceDirectionDetails(
+      LatLng initialPosition, LatLng finalPosition) async {
+    var directionUrl = Uri.parse(
+        'https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${finalPosition.latitude},${finalPosition.longitude}&key=$apiKey');
+    var res = await NetworkHelper.getRequest(directionUrl);
+
+    if (res == 'Failed') {
+      return null;
+    }
+
+    DirectionDetails directionDetails = DirectionDetails();
+    directionDetails.encodedPoints =
+        res['routes'][0]['overview_polyline']['points'];
+    directionDetails.distanceText =
+        res['routes'][0]['legs'][0]['distance']['text'];
+    directionDetails.distanceValue =
+        res['routes'][0]['legs'][0]['distance']['value'];
+    directionDetails.durationText =
+        res['routes'][0]['legs'][0]['duration']['text'];
+    directionDetails.durationValue =
+        res['routes'][0]['legs'][0]['duration']['value'];
+
+    return directionDetails;
   }
 }
