@@ -19,6 +19,49 @@ class LoginScreen extends StatelessWidget {
     Fluttertoast.showToast(msg: '$message');
   }
 
+  void loginUser(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialogue(
+            message: 'Authenticating user, please wait...',
+          );
+        });
+
+    final User? firebaseUser = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+      email: emailTextEditingController.text,
+      password: passwordTextEditingController.text,
+    )
+            .catchError((errMsg) {
+      Navigator.pop(context);
+      buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
+    }))
+        .user;
+
+    if (firebaseUser != null) // create user
+    {
+      // save data
+
+      usersRef.child(firebaseUser.uid).once().then((DataSnapshot snapshot) {
+        if (snapshot.value != null) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, HomeScreen.id, (route) => false);
+          buildShowToast(message: 'You are now logged in', context: context);
+        } else {
+          // error
+          Navigator.pop(context);
+          _firebaseAuth.signOut();
+          buildShowToast(message: 'No account found', context: context);
+        }
+      });
+    } else {
+      Navigator.pop(context);
+      buildShowToast(message: 'An error has occured', context: context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,48 +194,5 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void loginUser(BuildContext context) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return ProgressDialogue(
-            message: 'Authenticating user, please wait...',
-          );
-        });
-
-    final User? firebaseUser = (await _firebaseAuth
-            .signInWithEmailAndPassword(
-      email: emailTextEditingController.text,
-      password: passwordTextEditingController.text,
-    )
-            .catchError((errMsg) {
-      Navigator.pop(context);
-      buildShowToast(message: 'Error:' + errMsg.toString(), context: context);
-    }))
-        .user;
-
-    if (firebaseUser != null) // create user
-    {
-      // save data
-
-      usersRef.child(firebaseUser.uid).once().then((DataSnapshot snapshot) {
-        if (snapshot.value != null) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, HomeScreen.id, (route) => false);
-          buildShowToast(message: 'You are now logged in', context: context);
-        } else {
-          // error
-          Navigator.pop(context);
-          _firebaseAuth.signOut();
-          buildShowToast(message: 'No account found', context: context);
-        }
-      });
-    } else {
-      Navigator.pop(context);
-      buildShowToast(message: 'An error has occured', context: context);
-    }
   }
 }

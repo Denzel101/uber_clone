@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Uber Clone',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.yellow,
           fontFamily: 'bolt-regular',
         ),
         initialRoute: HomeScreen.id,

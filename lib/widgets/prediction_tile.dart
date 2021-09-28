@@ -33,7 +33,7 @@ class PredictionTile extends StatelessWidget {
       address.placeName = res['result']['name'];
       address.placeId = placeId;
       address.latitude = res['result']['geometry']['location']['lat'];
-      address.latitude = res['result']['geometry']['location']['lng'];
+      address.longitude = res['result']['geometry']['location']['lng'];
 
       Provider.of<AppData>(context, listen: false)
           .updateDropOffLocationAddress(address);
@@ -62,7 +62,7 @@ class PredictionTile extends StatelessWidget {
               children: [
                 Icon(
                   Icons.add_location,
-                  color: Colors.black,
+                  // color: Colors.yellow,
                 ),
                 SizedBox(
                   width: 14.0,
