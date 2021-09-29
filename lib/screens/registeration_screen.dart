@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uber_clone/components/progress_dialogue.dart';
 import 'package:uber_clone/main.dart';
+import 'package:uber_clone/utils/app.dart';
 import 'package:uber_clone/screens/home_screen.dart';
 
 import 'login_screen.dart';

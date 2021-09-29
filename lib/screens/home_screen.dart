@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -10,10 +11,16 @@ import 'package:provider/provider.dart';
 import 'package:uber_clone/components/address_content.dart';
 import 'package:uber_clone/components/divider.dart';
 import 'package:uber_clone/components/progress_dialogue.dart';
-import 'package:uber_clone/models/app_data.dart';
+import 'package:uber_clone/models/direction_details.dart';
+import 'package:uber_clone/provider/app_data.dart';
 import 'package:uber_clone/screens/search_screen.dart';
 import 'package:uber_clone/services/methods.dart';
+import 'package:uber_clone/utils/config_map.dart';
+import 'package:uber_clone/utils/constants.dart';
 import 'package:uber_clone/widgets/drawer_widget.dart';
+import 'package:uber_clone/widgets/ride_details.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:uber_clone/widgets/ride_request.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = 'home';
@@ -26,16 +33,20 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   double bottomPaddingOfMap = 0;
   static double rideDetailsContainerHeight = 0;
   static double searchContainerHeight = 300.0;
+  static double requestRideContainerHeight = 0;
+  bool drawerOpen = true;
 
   Completer<GoogleMapController> _googleMapController = Completer();
 
   late GoogleMapController newGoogleMapController;
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  DirectionDetails? tripDirectionDetails;
+  DatabaseReference? rideRequestRef;
 
   List<LatLng> pLineCoordinates = [];
   Set<Polyline> polylineSet = {};
@@ -50,7 +61,19 @@ class _HomeScreenState extends State<HomeScreen> {
       searchContainerHeight = 0;
       rideDetailsContainerHeight = 300.0;
       bottomPaddingOfMap = 300.0;
+      drawerOpen = false;
     });
+  }
+
+  void displayRequestDetailsContainer() {
+    setState(() {
+      requestRideContainerHeight = 300;
+      rideDetailsContainerHeight = 0;
+      bottomPaddingOfMap = 300.0;
+      drawerOpen = true;
+    });
+
+    saveRideRequest();
   }
 
   void locatePosition() async {
@@ -86,6 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var details =
         await Methods.getPlaceDirectionDetails(pickUpLatLng, dropOffLatLng);
+    setState(() {
+      tripDirectionDetails = details!;
+    });
 
     Navigator.pop(context);
     print('This is the Encoded points ::');
@@ -183,6 +209,63 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  resetApp() {
+    setState(() {
+      drawerOpen = true;
+
+      searchContainerHeight = 300;
+      rideDetailsContainerHeight = 0;
+      requestRideContainerHeight = 0;
+      bottomPaddingOfMap = 300.0;
+      polylineSet.clear();
+      markers.clear();
+      circles.clear();
+      pLineCoordinates.clear();
+    });
+    locatePosition();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Methods.getOnlineUserInformation();
+  }
+
+  void saveRideRequest() {
+    rideRequestRef =
+        FirebaseDatabase.instance.reference().child('Ride Requests').push();
+    var pickUp = Provider.of<AppData>(context, listen: false).pickUpLocation;
+    var dropOff = Provider.of<AppData>(context, listen: false).dropOffLocation;
+
+    Map pickUpLocMap = {
+      'latitude': pickUp!.latitude.toString(),
+      'longitude': pickUp.longitude.toString(),
+    };
+
+    Map dropOffLocMap = {
+      'latitude': dropOff!.latitude.toString(),
+      'longitude': dropOff.longitude.toString(),
+    };
+    Map rideInfoMap = {
+      'driver_id': 'waiting',
+      'payment_method': 'cash',
+      'pickup': pickUpLocMap,
+      'drop off': dropOffLocMap,
+      'created_at': DateTime.now().toString(),
+      'rider_name': userCurrentInfo!.name,
+      'rider_phone': userCurrentInfo!.phone,
+      'pickup_address': pickUp.placeName,
+      'dropoff_address': dropOff.placeName,
+    };
+
+    rideRequestRef!.set(rideInfoMap);
+  }
+
+  void cancelRideRequest() {
+    rideRequestRef!.remove();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,7 +306,11 @@ class _HomeScreenState extends State<HomeScreen> {
             left: 22.0,
             child: GestureDetector(
               onTap: () {
-                scaffoldKey.currentState!.openDrawer();
+                if (drawerOpen) {
+                  scaffoldKey.currentState!.openDrawer();
+                } else {
+                  resetApp();
+                }
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -241,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(
-                    Icons.menu,
+                    (drawerOpen) ? Icons.menu : Icons.close,
                     color: Colors.black,
                   ),
                   radius: 20.0,
@@ -255,6 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
             right: 0.0,
             bottom: 0.0,
             child: AnimatedSize(
+              //vsync: this,
               curve: Curves.bounceIn,
               duration: Duration(milliseconds: 160),
               child: Container(
@@ -374,138 +462,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Positioned(
-            child: AnimatedSize(
-              curve: Curves.bounceIn,
-              duration: Duration(milliseconds: 160),
-              child: Container(
-                height: rideDetailsContainerHeight,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16.0),
-                    topRight: Radius.circular(16.0),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      spreadRadius: 0.5,
-                      offset: Offset(0.7, 0.7),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 17.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        color: Colors.tealAccent[100],
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/taxi.png',
-                                height: 70.0,
-                                width: 80.0,
-                              ),
-                              SizedBox(
-                                width: 16.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Car',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontFamily: 'bolt-semibold',
-                                    ),
-                                  ),
-                                  Text(
-                                    '10km',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontFamily: 'bolt-semibold',
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.moneyCheckAlt,
-                              size: 13.0,
-                              color: Colors.black54,
-                            ),
-                            SizedBox(
-                              width: 16.0,
-                            ),
-                            Text('Cash'),
-                            SizedBox(
-                              width: 6.0,
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Colors.black54,
-                              size: 16.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 24.0,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Theme.of(context).colorScheme.secondary),
-                          ),
-                          onPressed: () {},
-                          child: Padding(
-                            padding: EdgeInsets.all(17.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Request',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Icon(
-                                  FontAwesomeIcons.taxi,
-                                  color: Colors.white,
-                                  size: 26.0,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            right: 0.0,
-            bottom: 0.0,
-            left: 0.0,
+          RideDetails(
+            rideDetailsContainerHeight: rideDetailsContainerHeight,
+            tripDirectionDetails: tripDirectionDetails,
+            onPressed: displayRequestDetailsContainer,
+          ),
+          RideRequest(
+            requestRideContainerHeight: requestRideContainerHeight,
+            resetOnpressed: resetApp,
+            cancelOnPressed: cancelRideRequest,
           ),
         ],
       ),

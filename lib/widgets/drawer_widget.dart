@@ -1,7 +1,38 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uber_clone/components/divider.dart';
+import 'package:uber_clone/screens/home_screen.dart';
+import 'package:uber_clone/screens/login_screen.dart';
 
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
+  @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  late User loggedInUser;
+
+  final _auth = FirebaseAuth.instance;
+
+  void getUserDetails() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserDetails();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -28,7 +59,7 @@ class DrawerWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Profile name',
+                        '${loggedInUser.displayName}',
                         style: TextStyle(
                           fontFamily: 'bolt-semibold',
                           fontSize: 16.0,
@@ -73,6 +104,22 @@ class DrawerWidget extends StatelessWidget {
               'About',
               style: TextStyle(
                 fontSize: 15.0,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              _auth.signOut();
+              Navigator.pushNamedAndRemoveUntil(
+                  context, LoginScreen.id, (route) => false);
+            },
+            child: ListTile(
+              leading: Icon(FontAwesomeIcons.signOutAlt),
+              title: Text(
+                'Log out',
+                style: TextStyle(
+                  fontSize: 15.0,
+                ),
               ),
             ),
           ),

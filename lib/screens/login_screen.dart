@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uber_clone/components/progress_dialogue.dart';
 import 'package:uber_clone/screens/registeration_screen.dart';
+import 'package:uber_clone/utils/app.dart';
 
 import '../main.dart';
 import 'home_screen.dart';
@@ -136,7 +137,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      height: 10.0,
+                      height: 40.0,
                     ),
                     ElevatedButton(
                       style: ButtonStyle(

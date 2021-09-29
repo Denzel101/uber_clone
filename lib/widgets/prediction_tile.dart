@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/components/progress_dialogue.dart';
 import 'package:uber_clone/models/address.dart';
-import 'package:uber_clone/models/app_data.dart';
+import 'package:uber_clone/provider/app_data.dart';
 import 'package:uber_clone/models/place_predictions.dart';
 import 'package:uber_clone/services/network_helper.dart';
 import 'package:uber_clone/utils/config_map.dart';

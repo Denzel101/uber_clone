@@ -9,5 +9,3 @@ void main() async {
   runApp(MyApp());
 }
 
-DatabaseReference usersRef =
-    FirebaseDatabase.instance.reference().child('users');

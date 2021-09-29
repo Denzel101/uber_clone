@@ -14,7 +14,7 @@ class AddressContent extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: Colors.grey,
+          color: Colors.yellow,
         ),
         SizedBox(
           width: 12.0,
