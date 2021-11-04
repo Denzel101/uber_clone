@@ -27,10 +27,10 @@ class _RideDetailsState extends State<RideDetails>
       child: AnimatedSize(
         //vsync: this,
         curve: Curves.bounceIn,
-        duration: Duration(milliseconds: 160),
+        duration: const Duration(milliseconds: 160),
         child: Container(
           height: widget.rideDetailsContainerHeight,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0),
@@ -61,13 +61,13 @@ class _RideDetailsState extends State<RideDetails>
                           height: 70.0,
                           width: 80.0,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16.0,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Car',
                               style: TextStyle(
                                 fontSize: 18.0,
@@ -93,19 +93,19 @@ class _RideDetailsState extends State<RideDetails>
                           ((widget.tripDirectionDetails != null)
                               ? '\Kes ${Methods.calculateFares(widget.tripDirectionDetails!)}'
                               : ''),
-                          style: TextStyle(fontFamily: 'bolt-semibold'),
+                          style: const TextStyle(fontFamily: 'bolt-semibold'),
                         )
                       ],
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20.0,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Row(
-                    children: [
+                    children: const [
                       Icon(
                         FontAwesomeIcons.moneyCheckAlt,
                         size: 13.0,
@@ -126,11 +126,11 @@ class _RideDetailsState extends State<RideDetails>
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 24.0,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
@@ -143,7 +143,7 @@ class _RideDetailsState extends State<RideDetails>
                       padding: EdgeInsets.all(17.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        children: const [
                           Text(
                             'Request',
                             style: TextStyle(

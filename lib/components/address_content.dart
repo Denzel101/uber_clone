@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AddressContent extends StatelessWidget {
   final IconData icon;
-  final locationAddress;
-  final locationDescripton;
+  final String locationAddress;
+  final String locationDescripton;
 
-  AddressContent(
-      {required this.icon, this.locationAddress, this.locationDescripton});
+  const AddressContent(
+      {required this.icon,
+      required this.locationAddress,
+      required this.locationDescripton});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +19,7 @@ class AddressContent extends StatelessWidget {
           icon,
           color: Colors.yellow,
         ),
-        SizedBox(
+        const SizedBox(
           width: 12.0,
         ),
         Column(
@@ -24,13 +27,14 @@ class AddressContent extends StatelessWidget {
           children: [
             Text(
               locationAddress,
+              overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(
+            const SizedBox(
               height: 4.0,
             ),
             Text(
               locationDescripton,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12.0,
                 color: Colors.grey,
               ),

@@ -8,6 +8,8 @@ import 'package:uber_clone/utils/config_map.dart';
 import 'package:uber_clone/widgets/prediction_tile.dart';
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
+
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -51,7 +53,7 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             Container(
               height: 215.0,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -63,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   left: 25.0,
                   top: 20.0,
                   right: 25.0,
@@ -71,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 5.0,
                     ),
                     Stack(
@@ -80,8 +82,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Icon(Icons.arrow_back)),
-                        Center(
+                            child: const Icon(Icons.arrow_back)),
+                        const Center(
                           child: Text(
                             'Set drop off',
                             style: TextStyle(
@@ -92,7 +94,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16.0,
                     ),
                     Row(
@@ -102,7 +104,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           height: 16.0,
                           width: 16.0,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 18.0,
                         ),
                         Expanded(
@@ -112,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: Padding(
-                              padding: EdgeInsets.all(3.0),
+                              padding: const EdgeInsets.all(3.0),
                               child: TextField(
                                 controller: pickUpTextEditingController,
                                 decoration: InputDecoration(
@@ -121,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   filled: true,
                                   border: InputBorder.none,
                                   isDense: true,
-                                  contentPadding: EdgeInsets.only(
+                                  contentPadding: const EdgeInsets.only(
                                     left: 11.0,
                                     top: 8.0,
                                     bottom: 8.0,
@@ -133,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10.0,
                     ),
                     Row(
@@ -143,7 +145,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           height: 16.0,
                           width: 16.0,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 18.0,
                         ),
                         Expanded(
@@ -153,7 +155,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: Padding(
-                              padding: EdgeInsets.all(3.0),
+                              padding: const EdgeInsets.all(3.0),
                               child: TextField(
                                 autofocus: true,
                                 onChanged: (value) {
@@ -166,7 +168,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   filled: true,
                                   border: InputBorder.none,
                                   isDense: true,
-                                  contentPadding: EdgeInsets.only(
+                                  contentPadding: const EdgeInsets.only(
                                     left: 11.0,
                                     top: 8.0,
                                     bottom: 8.0,
@@ -183,12 +185,12 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             //Displaying prediction
-            SizedBox(
+            const SizedBox(
               height: 10.0,
             ),
-            (placePredictionList.length > 0)
+            (placePredictionList.isNotEmpty)
                 ? Padding(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
                       horizontal: 16.0,
                     ),
@@ -199,11 +201,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) =>
-                          DividerWidget(),
+                          const DividerWidget(),
                       itemCount: placePredictionList.length,
                       shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      padding: EdgeInsets.all(0.0),
+                      physics: const ClampingScrollPhysics(),
+                      padding: const EdgeInsets.all(0.0),
                     ),
                   )
                 : Container(),

@@ -17,8 +17,10 @@ class RegisterationScreen extends StatelessWidget {
   TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
 
+  RegisterationScreen({Key? key}) : super(key: key);
+
   buildShowToast({required String message, required BuildContext context}) {
-    Fluttertoast.showToast(msg: '$message');
+    Fluttertoast.showToast(msg: message);
   }
 
   void registerNewUSer(BuildContext context) async {
@@ -26,7 +28,7 @@ class RegisterationScreen extends StatelessWidget {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return ProgressDialogue(
+          return const ProgressDialogue(
             message: 'Registering user, please wait...',
           );
         });
@@ -72,7 +74,7 @@ class RegisterationScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Image.asset(
@@ -81,10 +83,10 @@ class RegisterationScreen extends StatelessWidget {
                 width: 350.0,
                 alignment: Alignment.center,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15.0,
               ),
-              Text(
+              const Text(
                 'Register as a Rider',
                 style: TextStyle(
                   fontSize: 24.0,
@@ -96,13 +98,13 @@ class RegisterationScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: nameTextEditingController,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Name',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -112,17 +114,17 @@ class RegisterationScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: emailTextEditingController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Email',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -132,17 +134,17 @@ class RegisterationScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: phoneTextEditingController,
                       keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Phone Number',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -152,18 +154,18 @@ class RegisterationScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: passwordTextEditingController,
                       obscureText: true,
                       obscuringCharacter: '*',
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Password',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -173,11 +175,11 @@ class RegisterationScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10.0,
                     ),
                     ElevatedButton(
@@ -185,7 +187,7 @@ class RegisterationScreen extends StatelessWidget {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.yellow),
                         textStyle: MaterialStateProperty.all(
-                            TextStyle(color: Colors.white)),
+                            const TextStyle(color: Colors.white)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -215,7 +217,7 @@ class RegisterationScreen extends StatelessWidget {
                           registerNewUSer(context);
                         }
                       },
-                      child: Container(
+                      child: const SizedBox(
                         height: 50.0,
                         child: Center(
                           child: Text(
@@ -236,7 +238,7 @@ class RegisterationScreen extends StatelessWidget {
                   Navigator.pushNamedAndRemoveUntil(
                       context, LoginScreen.id, (route) => false);
                 },
-                child: Text(
+                child: const Text(
                   'Already have an account? Login here',
                 ),
               ),

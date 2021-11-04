@@ -25,7 +25,7 @@ class _RideRequestState extends State<RideRequest> {
       left: 0.0,
       right: 0.0,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.0),
@@ -45,7 +45,7 @@ class _RideRequestState extends State<RideRequest> {
           padding: const EdgeInsets.all(30.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 12.0,
               ),
               SizedBox(
@@ -77,7 +77,7 @@ class _RideRequestState extends State<RideRequest> {
                   },
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 22.0,
               ),
               GestureDetector(
@@ -96,16 +96,16 @@ class _RideRequestState extends State<RideRequest> {
                     ),
                     borderRadius: BorderRadius.circular(26.0),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
                     size: 26.0,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
-              Container(
+              const SizedBox(
                 width: double.infinity,
                 child: Text(
                   'Cancel Ride',

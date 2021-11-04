@@ -16,7 +16,7 @@ class PredictionTile extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) =>
-          ProgressDialogue(message: 'Setting Dropoff, Please wait...'),
+          const ProgressDialogue(message: 'Setting Dropoff, Please wait...'),
     );
     var placeDetails = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey');
@@ -37,8 +37,6 @@ class PredictionTile extends StatelessWidget {
 
       Provider.of<AppData>(context, listen: false)
           .updateDropOffLocationAddress(address);
-      print('This is drop off location :: ');
-      print(address.placeName);
       Navigator.pop(context, 'getDirection');
     }
   }
@@ -47,65 +45,63 @@ class PredictionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
-        padding: EdgeInsets.all(0.0),
+        padding: const EdgeInsets.all(0.0),
       ),
       onPressed: () {
         getPlaceAddressDetails(placePredictions.placeId, context);
       },
-      child: Container(
-        child: Column(
-          children: [
-            SizedBox(
-              width: 10.0,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.add_location,
-                  // color: Colors.yellow,
+      child: Column(
+        children: [
+          const SizedBox(
+            width: 10.0,
+          ),
+          Row(
+            children: [
+              const Icon(
+                Icons.add_location,
+                // color: Colors.yellow,
+              ),
+              const SizedBox(
+                width: 14.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    Text(
+                      placePredictions.mainText,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2.0,
+                    ),
+                    Text(
+                      placePredictions.secondaryText,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 14.0,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 8.0,
-                      ),
-                      Text(
-                        placePredictions.mainText,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 2.0,
-                      ),
-                      Text(
-                        placePredictions.secondaryText,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8.0,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            SizedBox(
-              width: 10.0,
-            ),
-          ],
-        ),
+              )
+            ],
+          ),
+          const SizedBox(
+            width: 10.0,
+          ),
+        ],
       ),
     );
   }

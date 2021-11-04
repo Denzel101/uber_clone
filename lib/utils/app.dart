@@ -9,6 +9,8 @@ import 'package:uber_clone/screens/login_screen.dart';
 import 'package:uber_clone/screens/registeration_screen.dart';
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -16,9 +18,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AppData>(
           create: (context) => AppData(),
         ),
-        // ChangeNotifierProvider<AppState>(
-        //   create: (context) => AppState(context),
-        // ),
+        ChangeNotifierProvider<AppState>(
+          create: (context) => AppState(context),
+        ),
       ],
       child: MaterialApp(
         title: 'Uber Clone',
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
         routes: {
           LoginScreen.id: (context) => LoginScreen(),
           RegisterationScreen.id: (context) => RegisterationScreen(),
-          HomeScreen.id: (context) => HomeScreen(),
+          HomeScreen.id: (context) => const HomeScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

@@ -16,8 +16,10 @@ class LoginScreen extends StatelessWidget {
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
 
+  LoginScreen({Key? key}) : super(key: key);
+
   buildShowToast({required String message, required BuildContext context}) {
-    Fluttertoast.showToast(msg: '$message');
+    Fluttertoast.showToast(msg: message);
   }
 
   void loginUser(BuildContext context) async {
@@ -25,7 +27,7 @@ class LoginScreen extends StatelessWidget {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return ProgressDialogue(
+          return const ProgressDialogue(
             message: 'Authenticating user, please wait...',
           );
         });
@@ -71,7 +73,7 @@ class LoginScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 45.0,
               ),
               Image.asset(
@@ -80,10 +82,10 @@ class LoginScreen extends StatelessWidget {
                 width: 350.0,
                 alignment: Alignment.center,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15.0,
               ),
-              Text(
+              const Text(
                 'Login as a Rider',
                 style: TextStyle(
                   fontSize: 24.0,
@@ -95,13 +97,13 @@ class LoginScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: emailTextEditingController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Email',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -111,18 +113,18 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 1.0,
                     ),
                     TextField(
                       controller: passwordTextEditingController,
                       obscureText: true,
                       obscuringCharacter: '*',
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Password',
                         labelStyle: TextStyle(
                           fontSize: 14.0,
@@ -132,11 +134,11 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14.0,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 40.0,
                     ),
                     ElevatedButton(
@@ -144,7 +146,7 @@ class LoginScreen extends StatelessWidget {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.yellow),
                         textStyle: MaterialStateProperty.all(
-                            TextStyle(color: Colors.white)),
+                            const TextStyle(color: Colors.white)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -165,7 +167,7 @@ class LoginScreen extends StatelessWidget {
                           loginUser(context);
                         }
                       },
-                      child: Container(
+                      child: const SizedBox(
                         height: 50.0,
                         child: Center(
                           child: Text(
@@ -186,7 +188,7 @@ class LoginScreen extends StatelessWidget {
                   Navigator.pushNamedAndRemoveUntil(
                       context, RegisterationScreen.id, (route) => false);
                 },
-                child: Text(
+                child: const Text(
                   'Do not have an account? Register here',
                 ),
               ),

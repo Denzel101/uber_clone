@@ -13,6 +13,7 @@ import 'package:uber_clone/components/divider.dart';
 import 'package:uber_clone/components/progress_dialogue.dart';
 import 'package:uber_clone/models/direction_details.dart';
 import 'package:uber_clone/provider/app_data.dart';
+import 'package:uber_clone/provider/app_state.dart';
 import 'package:uber_clone/screens/search_screen.dart';
 import 'package:uber_clone/services/methods.dart';
 import 'package:uber_clone/utils/config_map.dart';
@@ -24,10 +25,12 @@ import 'package:uber_clone/widgets/ride_request.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = 'home';
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
+
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -40,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   static double requestRideContainerHeight = 0;
   bool drawerOpen = true;
 
-  Completer<GoogleMapController> _googleMapController = Completer();
+  final Completer<GoogleMapController> _googleMapController = Completer();
 
   late GoogleMapController newGoogleMapController;
 
@@ -90,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
     String address = await Methods.searchCoordinateAddress(position, context);
-    print('This is your address :: ' + address);
   }
 
   Future<void> getPlaceDirection() async {
@@ -104,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (BuildContext context) =>
-          ProgressDialogue(message: 'Please wait...'),
+          const ProgressDialogue(message: 'Please wait...'),
     );
 
     var details =
@@ -114,26 +116,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     Navigator.pop(context);
-    print('This is the Encoded points ::');
-    print(details!.encodedPoints);
 
     PolylinePoints polylinePoints = PolylinePoints();
     List<PointLatLng> decodePolylinePointResult =
-        polylinePoints.decodePolyline(details.encodedPoints);
+        polylinePoints.decodePolyline(details!.encodedPoints);
 
     pLineCoordinates.clear();
     if (decodePolylinePointResult.isNotEmpty) {
-      decodePolylinePointResult.forEach((PointLatLng pointLatLng) {
+      for (var pointLatLng in decodePolylinePointResult) {
         pLineCoordinates
             .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-      });
+      }
     }
 
     polylineSet.clear();
 
     setState(() {
       Polyline polyline = Polyline(
-        polylineId: PolylineId('PolylineID'),
+        polylineId: const PolylineId('PolylineID'),
         color: Colors.red,
         jointType: JointType.round,
         points: pLineCoordinates,
@@ -169,14 +169,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
 
     Marker pickUpLocMarker = Marker(
-      markerId: MarkerId('pickUpId'),
+      markerId: const MarkerId('pickUpId'),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       infoWindow:
           InfoWindow(title: initialPos.placeName, snippet: 'My location'),
       position: pickUpLatLng,
     );
     Marker dropOffLocMarker = Marker(
-      markerId: MarkerId('dropOffId'),
+      markerId: const MarkerId('dropOffId'),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       infoWindow:
           InfoWindow(title: finalPos.placeName, snippet: 'Drop off location'),
@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     Circle pickUpLocCircle = Circle(
-      circleId: CircleId('pickUpId'),
+      circleId: const CircleId('pickUpId'),
       fillColor: Colors.red,
       center: pickUpLatLng,
       radius: 12,
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       strokeColor: Colors.redAccent,
     );
     Circle dropOffLocCircle = Circle(
-      circleId: CircleId('dropOffId'),
+      circleId: const CircleId('dropOffId'),
       fillColor: Colors.red,
       center: dropOffLatLng,
       radius: 12,
@@ -268,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       // appBar: AppBar(
@@ -276,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       drawer: Container(
         color: Colors.white,
         width: 255.0,
-        child: DrawerWidget(),
+        child: const DrawerWidget(),
       ),
       body: Stack(
         children: [
@@ -298,6 +299,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 bottomPaddingOfMap = 300.0;
               });
               locatePosition();
+              //appState.locatePosition(context);
             },
           ),
           //hamburger menu for drawer
@@ -309,14 +311,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 if (drawerOpen) {
                   scaffoldKey.currentState!.openDrawer();
                 } else {
-                  resetApp();
+                  //resetApp();
+                  appState.resetApp(context);
                 }
               },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(22.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black,
                       blurRadius: 6.0,
@@ -344,10 +347,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: AnimatedSize(
               //vsync: this,
               curve: Curves.bounceIn,
-              duration: Duration(milliseconds: 160),
+              duration: const Duration(milliseconds: 160),
               child: Container(
                 height: searchContainerHeight,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(18.0),
@@ -370,23 +373,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 6.0,
                       ),
-                      Text(
+                      const Text(
                         'Hi there',
                         style: TextStyle(
                           fontSize: 12.0,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Where to?',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontFamily: 'bolt-semibold',
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20.0,
                       ),
                       GestureDetector(
@@ -394,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           var res = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SearchScreen()));
+                                  builder: (context) => const SearchScreen()));
 
                           if (res == 'getDirection') {
                             displayRideDetailsContainer();
@@ -405,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(5.0),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.black54,
                                 blurRadius: 6.0,
@@ -417,7 +420,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Row(
-                              children: [
+                              children: const [
                                 Icon(
                                   Icons.search,
                                   color: Colors.yellow,
@@ -431,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 24.0,
                       ),
                       AddressContent(
@@ -444,14 +447,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 : 'Add Home',
                         locationDescripton: 'Your living home address',
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10.0,
                       ),
-                      DividerWidget(),
-                      SizedBox(
+                      const DividerWidget(),
+                      const SizedBox(
                         height: 16.0,
                       ),
-                      AddressContent(
+                      const AddressContent(
                         icon: Icons.work,
                         locationAddress: 'Add work',
                         locationDescripton: 'Your work address',

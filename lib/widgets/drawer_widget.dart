@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uber_clone/components/divider.dart';
 import 'package:uber_clone/screens/home_screen.dart';
 import 'package:uber_clone/screens/login_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
+  const DrawerWidget({Key? key}) : super(key: key);
+
   @override
   State<DrawerWidget> createState() => _DrawerWidgetState();
 }
@@ -15,6 +18,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   final _auth = FirebaseAuth.instance;
 
+  buildShowToast({required String message, required BuildContext context}) {
+    Fluttertoast.showToast(msg: message);
+  }
+
   void getUserDetails() async {
     try {
       final user = _auth.currentUser;
@@ -22,7 +29,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         loggedInUser = user;
       }
     } catch (e) {
-      print(e);
+      buildShowToast(message: '$e', context: context);
     }
   }
 
@@ -39,10 +46,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       child: ListView(
         // drawer header
         children: [
-          Container(
+          SizedBox(
             height: 165.0,
             child: DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
               ),
               child: Row(
@@ -52,7 +59,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     height: 65.0,
                     width: 65.0,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 16.0,
                   ),
                   Column(
@@ -60,27 +67,27 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     children: [
                       Text(
                         '${loggedInUser.displayName}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'bolt-semibold',
                           fontSize: 16.0,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 6.0,
                       ),
-                      Text('Visit Profile'),
+                      const Text('Visit Profile'),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          DividerWidget(),
-          SizedBox(
+          const DividerWidget(),
+          const SizedBox(
             height: 12.0,
           ),
           // header controller
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.history),
             title: Text(
               'History',
@@ -89,7 +96,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               ),
             ),
           ),
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.person),
             title: Text(
               'Visit Profile',
@@ -98,7 +105,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               ),
             ),
           ),
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.info),
             title: Text(
               'About',
@@ -113,7 +120,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               Navigator.pushNamedAndRemoveUntil(
                   context, LoginScreen.id, (route) => false);
             },
-            child: ListTile(
+            child: const ListTile(
               leading: Icon(FontAwesomeIcons.signOutAlt),
               title: Text(
                 'Log out',
