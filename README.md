@@ -1,6 +1,7 @@
 # uber_clone
 
-A new Flutter project.
+A flutter project trying to replicate to replicate the popular bolt app in terms of UI and fucntionality.
+Supports both iOS and ANdroid platform.
 
 ## Getting Started
 
